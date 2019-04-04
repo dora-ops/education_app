@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import cart from '@//pages/buyCourse/cart'
 import login from '@/pages/login/login.vue'
 import register from '@/pages/login/register.vue'
 import myCourse from '@/pages/myCourse/myCourse.vue'
+import courseDetail from '@/pages/buyCourse/courseDetail.vue'
 import buyCourse from '@/pages/buyCourse/buyCourse.vue'
 import forum from '@/pages/forum/forum.vue'
 import addPost from '@/pages/forum/addPost.vue'
@@ -81,6 +83,16 @@ export default new Router({
       path: '/personalCenter/chooseEdit/changeTel',
       name: 'changeTel',
       component: changeTel
-    }
+    },
+    {
+        path: '/courseDetail/:name',
+        name: 'courseDetail',
+        component: courseDetail
+      },
+      {
+        path: '/cart',
+        name: 'cart',
+        component: cart
+      }
   ]
 })

@@ -5,11 +5,24 @@ import user from './modules/user'
 
 Vue.use(Vuex)
 
+const mutations={
+    set_toast(state, toast) {
+        state.toast = toast
+      },
+}
+
+const actions={
+    set_toast(context, toast) {
+        context.commit('set_toast', toast)
+      },
+}
 const store = new Vuex.Store({
     modules:{
         user
     },
-    getters
+    actions,
+    getters,
+    mutations
 })
 
 export default store

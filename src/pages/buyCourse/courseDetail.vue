@@ -2,13 +2,14 @@
   <div>
     <div><top v-bind:title="title"></top></div>
     <div class="context" >
-      <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id" @click="chooseCourse(item.name)">
+      <div class='allCourse' v-for="item in classList" v-bind:key="item.id">
         <p id='name'>{{item.name}}</p>
-        <p id='price'>￥{{item.price}}</p>
-        <p id='abstract'>{{item.abstract}}</p>
+        <p id='price'>老师{{item.teacher}}</p>
+        <!-- <p id='price'></p> -->
+        <p id='abstract'>人数{{item.peopleQTY}}开始时间:{{item.startDate}}-结束时间:{{item.endDate}}</p>
       </div>
     </div>
-    <div><Bottom v-bind:switchValue="switchValue"></Bottom></div>
+    <!-- <div><Bottom v-bind:switchValue="switchValue"></Bottom></div> -->
   </div>
 </template>
 
@@ -21,38 +22,33 @@ export default {
   name: 'buyCourse',
   data () {
     return {
-      title:'全部课程',
+      title:'',
       switchValue:2,
-      allCourse: []
+      allCourse: [],
+      classList:[]
     };
   },
 
   components: {top,Bottom},
 
-  computed: {},
-
-  mounted: {},
-
   methods: {
-    getCourse(){
-      this.$http.get('/api/courses/getAllCourse',{
-      }).then((res) => {
-        console.log(res.data)
-        this.allCourse = res.data
-      })
+    getCourse(name){
+          var  sql=classes.getCourseClass.replace('?',name)
+           this.$http.post("/api/base/action", { sql: sql }).then(res => {
+               var data = res.data;
+               this.classList = data;
+           });
+     
     },
     chooseCourse(name){
-         this.$router.push({name:'courseDetail',params:{name:name}})
-    //   var  sql=classes.getCourseClass.replace('?',name)
-    //        this.$http.post("/api/base/action", { sql: sql }).then(res => {
-    //            var data = res.data;
-    //            this.classList = data;
-    //        });
+    
     }
   },
 
   created(){
-    this.getCourse()
+    var course_name=this.$router.currentRoute.params.name
+    this.title=course_name
+    this.getCourse(course_name)
   }
 }
 

@@ -8,6 +8,12 @@ import ElementUI from 'element-ui'
 import store from './store/index'
 import 'element-ui/lib/theme-chalk/index.css'
 
+// icon font
+import './public/imooc/style.css'
+
+import toast from './public/javascripts/toast';
+Vue.prototype.$toast = toast
+
 Date.prototype.format = function(fmt) { 
     var o = { 
        "M+" : this.getMonth()+1,                 //月份 
