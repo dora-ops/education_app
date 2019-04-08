@@ -19,10 +19,10 @@
         </ul>
 
         <!-- 暂无商品 -->
-        <div class="no-shop" v-if="shoplist.length == 0">
+        <!-- <div class="no-shop" v-if="shoplist.length == 0">
           <img src="@/public/images/no-shop.png">
           <p>暂无商品</p>
-        </div>
+        </div> -->
       </div>
 
       <!-- 底部 -->
@@ -43,17 +43,40 @@
 <script>
 import header from "@/components/header";
 import citem from "@/components/citem";
-const  mockList=[{"checked":false,"id":1,"icon":"../../../static/img/cart.png","title":"任越须立快员何情委从子意正数放件识","intro":"件战内已广北儿料由来前式除增回白区细利强时极具体论书专队使改片自原","money":203}]
+import { classes, customers } from "../../sqlMap.js";
+
 export default {
   data() {
     return {
-      all: false
+      all: false,
+      shoplist: [],
+      user: JSON.parse(sessionStorage.userInfo),
+      courseId: ""
     };
   },
   methods: {
-    pay() {
+    async pay() {
       if (this.total) {
+        var user = this.user;
+        var classes = user.classes ==null||undefined?[] :JSON.parse(user.classes);
+        var courses = user.courses==null||undefined?[] :JSON.parse(user.courses);
+        for (let i = 0; i < this.shoplist.length; i++) {
+          const item = this.shoplist[i];
+          if (item.checked) {
+            classes.push(item.id);
+          }
+        }
+        courses.push(this.courseId)
+        //去重
+        classes = Array.from(new Set(classes)) ;
+        courses = Array.from(new Set(courses));
+        var sql = customers.buyClasses
+          .replace("?", JSON.stringify(courses))
+          .replace("?", JSON.stringify(classes))
+          .replace("?", user.id);
         alert(`一共支付${this.total}元`);
+        this.$http.post("/api/base/action", { sql: sql }).then(res => {});
+        
       } else {
         this.$toast.show(`请勾选商品`);
       }
@@ -61,9 +84,9 @@ export default {
     checkItem(index) {
       var item = this.shoplist[index];
       var checked = !item.checked;
-    //   this.$set(item, "checked", checked);
-     item.checked=checked
-      this.shoplist[index]=item
+      this.$set(item, "checked", checked);
+      //  item.checked=checked
+      //   this.shoplist[index]=item
     },
     checkAll() {
       var checked = !this.all;
@@ -82,22 +105,40 @@ export default {
         this.$storage.set("shopCartInfo", shopCartInfo);
         this.$store.commit("set_shopCartInfo", shopCartInfo);
       }
-    }
+    },
+    getCourse(item) {
+      var sql = classes.getCourseClass.replace("?", item.name);
+      this.courseId = item.id;
+      this.$http.post("/api/base/action", { sql: sql }).then(res => {
+        var data = res.data;
+        data.forEach(cla => {
+          cla.icon = "../../../static/img/cart.png";
+          cla.price = item.price;
+        });
+        this.shoplist = data;
+      });
+    },
+    
   },
   computed: {
-    shoplist() {
-        
-      return this.$store.state.shopCartInfo || mockList;
-    },
+    // shoplist() {
+
+    //   return this.$store.state.shopCartInfo || mockList;
+    // },
     total() {
       var money = 0;
       this.shoplist.forEach(item => {
         if (item.checked) {
-          money += item.money;
+          money += item.price;
         }
       });
       return money;
     }
+  },
+  created() {
+    var item = this.$router.currentRoute.params.item;
+
+    this.getCourse(item);
   },
   components: {
     "imooc-header": header,
@@ -107,9 +148,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/public/stylesheets/theme.scss";
+@import "@/public/stylesheets/main.scss";
 // @import "@/public/stylesheets/util.scss";
-// @import "@/public/stylesheets/main.scss";
+@import "@/public/stylesheets/theme.scss";
+
 .cart {
   position: absolute;
   top: 0;

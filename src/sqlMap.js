@@ -1,73 +1,92 @@
 var sqlMap = {
     courses: {
-      getAllCourse: 'select * from courses',
+        getAllCourse: 'select * from courses',
         getMyCourses: 'select * from courses where id = ?',
-      page:function(listQuery) {
-        var sql='SELECT * FROM `courses` WHERE 1=1 ';
-          if (listQuery.name) {
-              sql+=' AND `name` LIKE  "%'+listQuery.name+'%"'
-          }
-          if (listQuery.ifSale) {
-             sql+=' AND `ifSale` = '+listQuery.ifSale
-          }
-          if (listQuery.page&&listQuery.limit) {
-              var pos=(listQuery.page-1)*listQuery.limit
-              var end=listQuery.page*listQuery.limit
-              sql+=' LIMIT '+pos+','+end 
-          }
-          return sql
-      },
-      getSaleCourse: 'select * from courses where ifSale=1',
-      count:function (listQuery) {
-        var sql='SELECT count(*) as count FROM `courses` WHERE 1=1 ';
-        if (listQuery.name) {
-            sql+=' AND `name` LIKE  "%'+listQuery.name+'%"'
-        }
-        if (listQuery.ifSale) {
-           sql+=' AND `ifSale` = '+listQuery.ifSale
-        }
-        return sql
-      },
-       updateifSale:'UPDATE `courses` SET `ifSale` = "?" WHERE (`id` = "?");'
-    },
-    classes:{
-        getCourseClass: 'select * from classes where course ="?"',
-    },
-    customers:{
-        page:function(listQuery) {
-            var sql='SELECT * FROM `customers` WHERE 1=1 ';
-              if (listQuery.name) {
-                  sql+=' AND `name` LIKE  "%'+listQuery.name+'%"'
-              }
-              if (listQuery.tel) {
-                sql+=' AND `tel` LIKE  "%'+listQuery.tel+'%"'
-            }
-              if (listQuery.ifBuy) {
-                 sql+=' AND `ifBuy` = '+listQuery.ifBuy
-              }
-              if (listQuery.page&&listQuery.limit) {
-                  var pos=(listQuery.page-1)*listQuery.limit
-                  var end=listQuery.page*listQuery.limit
-                  sql+=' LIMIT '+pos+','+end 
-              }
-              return sql
-          },
-          count:function (listQuery) {
-            var sql='SELECT count(*) as count FROM `customers` WHERE 1=1 ';
+        page: function (listQuery) {
+            var sql = 'SELECT * FROM `courses` WHERE 1=1 ';
             if (listQuery.name) {
-                sql+=' AND `name` LIKE  "%'+listQuery.name+'%"'
-            }
-            if (listQuery.tel) {
-                sql+=' AND `tel` LIKE  "%'+listQuery.tel+'%"'
+                sql += ' AND `name` LIKE  "%' + listQuery.name + '%"'
             }
             if (listQuery.ifSale) {
-               sql+=' AND `ifSale` = '+listQuery.ifSale
+                sql += ' AND `ifSale` = ' + listQuery.ifSale
+            }
+            if (listQuery.page && listQuery.limit) {
+                var pos = (listQuery.page - 1) * listQuery.limit
+                var end = listQuery.page * listQuery.limit
+                sql += ' LIMIT ' + pos + ',' + end
             }
             return sql
-          },
-          buyCourse:'UPDATE `customers` SET `courses` = "?" , `ifBuy` = "?" WHERE (`id` = "?");'
+        },
+        getSaleCourse: 'select * from courses where ifSale=1',
+        count: function (listQuery) {
+            var sql = 'SELECT count(*) as count FROM `courses` WHERE 1=1 ';
+            if (listQuery.name) {
+                sql += ' AND `name` LIKE  "%' + listQuery.name + '%"'
+            }
+            if (listQuery.ifSale) {
+                sql += ' AND `ifSale` = ' + listQuery.ifSale
+            }
+            return sql
+        },
+        updateifSale: 'UPDATE `courses` SET `ifSale` = "?" WHERE (`id` = "?");'
+    },
+    classes: {
+        getResource: function (params) {
+            var sql = 'select * from resource where id in ('
+            //不可为空
+            for (let index = 0; index < params.length; index++) {
+                const element = params[index];
+                sql += element + ","
+                
+            }
+            // for (const id of params) {
+            //     sql += id + ","
+            // }
+            sql = sql.substring(0, sql.lastIndexOf(','))
+            sql += ')'
+            return sql;
+        },
+        getCourseClass: 'select * from classes where course ="?"',
+        getClassResource: 'select * from classes where id =?',
+       
+    },
+    customers: {
+        page: function (listQuery) {
+            var sql = 'SELECT * FROM `customers` WHERE 1=1 ';
+            if (listQuery.name) {
+                sql += ' AND `name` LIKE  "%' + listQuery.name + '%"'
+            }
+            if (listQuery.tel) {
+                sql += ' AND `tel` LIKE  "%' + listQuery.tel + '%"'
+            }
+            if (listQuery.ifBuy) {
+                sql += ' AND `ifBuy` = ' + listQuery.ifBuy
+            }
+            if (listQuery.page && listQuery.limit) {
+                var pos = (listQuery.page - 1) * listQuery.limit
+                var end = listQuery.page * listQuery.limit
+                sql += ' LIMIT ' + pos + ',' + end
+            }
+            return sql
+        },
+        count: function (listQuery) {
+            var sql = 'SELECT count(*) as count FROM `customers` WHERE 1=1 ';
+            if (listQuery.name) {
+                sql += ' AND `name` LIKE  "%' + listQuery.name + '%"'
+            }
+            if (listQuery.tel) {
+                sql += ' AND `tel` LIKE  "%' + listQuery.tel + '%"'
+            }
+            if (listQuery.ifSale) {
+                sql += ' AND `ifSale` = ' + listQuery.ifSale
+            }
+            return sql
+        },
+        buyCourse: 'UPDATE `customers` SET `courses` = "?" , `ifBuy` = "?" WHERE (`id` = "?");',
+        buyClasses: 'UPDATE `customers` SET `courses` = "?" , `classes` = "?" , `ifBuy` = "1" WHERE (`id` = "?");',
+        getUserInfo: 'select * from customers where id = ?',
     }
-   
-  }
-  
-  module.exports = sqlMap;
+
+}
+
+module.exports = sqlMap;

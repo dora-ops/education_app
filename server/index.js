@@ -20,7 +20,7 @@ app.all('*', function (req, res, next) {
     // res.header('Access-Control-Allow-Credentials', true);
     next();
 });
-
+app.use(express.static(path.join(__dirname, 'public')));
 
  
 // 后端api路由

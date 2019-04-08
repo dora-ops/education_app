@@ -4,10 +4,10 @@
       <img :src="course.icon">
     </div>
     <div class="info imooc-flex imooc-flex-column imooc-flex-around">
-      <div class="title hide-text-2">{{ course.title }}</div>
+      <div class="title hide-text-2">{{ course.name }}</div>
       <div class="intro hide-text-2">{{ course.intro }}</div>
-      <div class="people cr-basic fz-small" v-if="course.type">{{ course.type }}{{course.level}} &#8901; {{ course.people }}人在学</div>
-      <div class="money fz-small cr-main" v-if="course.money">&#165; {{ course.money }}</div>
+      <div class="people cr-basic fz-small" v-if="course.type">{{ course.type }}{{course.level}} &#8901; {{ course.teacher }}在教</div>
+      <div class="money fz-small cr-main" v-if="course.price">&#165; {{ course.price }}</div>
     </div>
   </div>
 </template>
@@ -19,11 +19,11 @@ export default {
       type: Object,
       default() {
         return {
-          title: "",
+          name: "",
           intro: "",
           level: "",
-          people: "",
-          money: ""
+          teacher: "",
+          price: ""
         };
       }
     },

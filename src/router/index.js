@@ -5,7 +5,7 @@ import cart from '@//pages/buyCourse/cart'
 import login from '@/pages/login/login.vue'
 import register from '@/pages/login/register.vue'
 import myCourse from '@/pages/myCourse/myCourse.vue'
-import courseDetail from '@/pages/buyCourse/courseDetail.vue'
+import courseDetail from '@/pages/myCourse/courseDetail.vue'
 import buyCourse from '@/pages/buyCourse/buyCourse.vue'
 import forum from '@/pages/forum/forum.vue'
 import addPost from '@/pages/forum/addPost.vue'
@@ -29,6 +29,11 @@ export default new Router({
       name: 'login',
       component: login
     },
+    {
+        path: '/hello',
+        name: 'hello',
+        component: HelloWorld
+      },
     {
       path: '/register',
       name: 'register',
@@ -85,12 +90,12 @@ export default new Router({
       component: changeTel
     },
     {
-        path: '/courseDetail/:name',
+        path: '/courseDetail/:id',
         name: 'courseDetail',
         component: courseDetail
       },
       {
-        path: '/cart',
+        path: '/cart/:name',
         name: 'cart',
         component: cart
       }

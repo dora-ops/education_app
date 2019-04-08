@@ -2,11 +2,12 @@
   <div>
     <div><top v-bind:title="title"></top></div>
     <div class="context" >
-      <div class='allCourse' v-for="item in classList" v-bind:key="item.id">
-        <p id='name'>{{item.name}}</p>
-        <p id='price'>老师{{item.teacher}}</p>
+        <p id='name'>班级:{{cls.name}}-课程:{{cls.course}}</p>
+      <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id">
+        <p id='name'>{{item.originalname}}</p>
+        <!-- <p id='price'>老师{{item.teacher}}</p> -->
         <!-- <p id='price'></p> -->
-        <p id='abstract'>人数{{item.peopleQTY}}开始时间:{{item.startDate}}-结束时间:{{item.endDate}}</p>
+        <p id='abstract'><video :src="'http://localhost:3000/'+item.fileName"  width="320" height="240" controls="controls"></video></p>
       </div>
     </div>
     <!-- <div><Bottom v-bind:switchValue="switchValue"></Bottom></div> -->
@@ -25,20 +26,29 @@ export default {
       title:'',
       switchValue:2,
       allCourse: [],
-      classList:[]
+      cls:{}
     };
   },
 
   components: {top,Bottom},
 
   methods: {
-    getCourse(name){
-          var  sql=classes.getCourseClass.replace('?',name)
-           this.$http.post("/api/base/action", { sql: sql }).then(res => {
-               var data = res.data;
-               this.classList = data;
-           });
-     
+    getClass(id) {
+      var sql = classes.getClassResource.replace("?",id);
+    //   this.courseId = item.id;
+      this.$http.post("/api/base/action", { sql: sql }).then(res => {
+        var cls = res.data[0];
+        this.cls=cls;
+        
+        if (cls.resource!=undefined&&cls.resource!=null) {
+            var resource=JSON.parse(cls.resource); 
+            sql=classes.getResource(resource)
+             this.$http.post("/api/base/action", { sql: sql }).then(res => {
+                 this.allCourse = res.data;
+             })
+        }
+        
+      });
     },
     chooseCourse(name){
     
@@ -46,9 +56,8 @@ export default {
   },
 
   created(){
-    var course_name=this.$router.currentRoute.params.name
-    this.title=course_name
-    this.getCourse(course_name)
+    var id = this.$router.currentRoute.params.id;
+    this.getClass(id)
   }
 }
 

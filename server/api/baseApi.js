@@ -3,10 +3,11 @@ var express = require('express');
 var router = express();
 var multer = require('multer');
 var UUID = require('uuid')
+var path = require('path')
 
 var storage = multer.diskStorage({  
     destination: function (req, file, cb) {  
-        cb(null, './uploads')  
+        cb(null,path.join(__dirname,'../public') )  
     },  
     filename: function (req, file, cb) {  
         

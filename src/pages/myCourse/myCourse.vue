@@ -18,104 +18,111 @@
 </template>
 
 <script>
-
-import top from '@/components/top'
-import bottom from '@/components/bottom'
+import top from "@/components/top";
+import bottom from "@/components/bottom";
+import { customers } from "../../sqlMap.js";
 // import * as moment from 'moment'
 
 export default {
-  name: 'studyCourse',
-  components:{top,bottom},
-  data () {
+  name: "studyCourse",
+  components: { top, bottom },
+  data() {
     return {
-      title:'我的课程',
-      switchValue:1,
-      myClass:[],
-      ifBuy: ''
+      title: "我的课程",
+      switchValue: 1,
+      myClass: [],
+      ifBuy: ""
     };
   },
 
-//   computed: {},
+  //   computed: {},
 
-//   mounted: {},
+  //   mounted: {},
 
   methods: {
-    chooseThis(id){//班级id
-    
+    chooseThis(id) {
+      //班级id
+       this.$router.push('courseDetail/'+id)
     },
-    getCourse(){
-      const moment=  this.$moment;
-      console.log(this.$store.getters.user)
-      if(this.$store.getters.user.ifBuy == '0'){
-        this.ifBuy = '0'
-      }else if(this.$store.getters.user.ifBuy == '1'){
-          
-        let courses =JSON.parse(this.$store.getters.user.courses) 
-       
-        this.$http.get('/api/classes/getMyClasses/',{params:
-        {courses: courses}
-        }).then((res) => {
-          console.log(res.data)
-          this.myClass = res.data
-          for(let i = 0;i<= this.myClass.length;i++){
-            this.myClass[i].startDate = moment(this.myClass[i].startDate).format('MM-DD-YYYY')
-            this.myClass[i].endDate = moment(this.myClass[i].endDate).format('MM-DD-YYYY')
-          }
-        })
+    getCourse(item) {
+      const moment = this.$moment;
+      //   console.log(this.$store.getters.user)
+      var user = this.$store.getters.user;
+      if (this.$store.getters.user.ifBuy == "0") {
+        this.ifBuy = "0";
+      } else if (this.$store.getters.user.ifBuy == "1") {
+        var sql = customers.getUserInfo.replace("?", user.id);
+        this.$http.post("/api/base/action", { sql: sql }).then(res => {
+          user = res.data[0];
+          let courses =
+            user.courses != (null || undefined) ? JSON.parse(user.courses) : [];
+          this.$http
+            .get("/api/classes/getMyClasses/", {
+              params: { courses: courses }
+            })
+            .then(res => {
+              var data = res.data;
+              for (let i = 0; i < data.length; i++) {
+                data[i].startDate = moment(data[i].startDate).format(
+                  "MM-DD-YYYY"
+                );
+                data[i].endDate = moment(data[i].endDate).format("MM-DD-YYYY");
+              }
+              this.myClass = data;
+            });
+        });
       }
-      console.log(this.ifBuy)
     },
-    dateFormat(date){
+    dateFormat(date) {
       arr = date.split("-");
-      console.log(arr)
-      
+      console.log(arr);
     },
-    switchTo2(){
-      this.$router.push({name:'buyCourse'})
+    switchTo2() {
+      this.$router.push({ name: "buyCourse" });
       // this.$router.replace('/buyCourse')
     }
   },
-  created(){
+  created() {
     this.getCourse();
+   
   }
-}
-
+};
 </script>
 <style lang='scss' scoped>
-  .context{
-    margin-top: 20%;
-  }
-  .center{
-    margin-top: 30%;
-    text-align: center
-  }
-  .center h1{
-    color: rgba(192, 181, 181,0.5);
-  }
-  .center p{
-    color: #1296db;
-  }
-  .myClass{
-    background-color: white;
-    padding: 5px;
-    margin-top: 10px;
-  }
-  #name{
-    font-size: 20px;
-    margin: 0;
-  }
-  img {
-    width: 16px;
-    height: 16px;
-    margin: 8px 5px 0px 0px;
-  }
-  #time{
-    font-size: 16px;
-    margin: 0;
-    color: #bfbfbf;
-    margin: 5px;
-  }
-  #teacher{
-    margin: 10px 0px 0px 0px;
-  }
+.context {
+  margin-top: 20%;
+}
+.center {
+  margin-top: 30%;
+  text-align: center;
+}
+.center h1 {
+  color: rgba(192, 181, 181, 0.5);
+}
+.center p {
+  color: #1296db;
+}
+.myClass {
+  background-color: white;
+  padding: 5px;
+  margin-top: 10px;
+}
+#name {
+  font-size: 20px;
+  margin: 0;
+}
+img {
+  width: 16px;
+  height: 16px;
+  margin: 8px 5px 0px 0px;
+}
+#time {
+  font-size: 16px;
+  margin: 0;
+  color: #bfbfbf;
+  margin: 5px;
+}
+#teacher {
+  margin: 10px 0px 0px 0px;
+}
 </style>

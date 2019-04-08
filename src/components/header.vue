@@ -96,7 +96,7 @@ export default {
       this.$router.push({ name: "user", params: { id: id } });
     },
     toCart() {
-      if (this.$store.state.userInfo) {
+      if (this.$store.state.userInfo||sessionStorage.userInfo) {
         this.$router.push({ name: "cart" });
       } else {
         this.$router.push({ name: "login" });
@@ -107,6 +107,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/public/stylesheets/main.scss";
 .header {
   .nav {
     padding: 1.2rem 1.5rem;

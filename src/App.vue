@@ -16,12 +16,17 @@ export default {
     //     this.transitionName = 'slide-left';
     //   }
     // }
+  },
+  data(){
+      return {
+          test:"asd"
+      }
   }
 }
 </script>
 
 <style lang="scss">
-@import "@/public/stylesheets/main.scss";
+// @import "@/public/stylesheets/main.scss";
   #app {
     /* font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;

@@ -2,7 +2,7 @@
   <div>
     <div><top v-bind:title="title"></top></div>
     <div class="context" >
-      <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id" @click="chooseCourse(item.name)">
+      <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id" @click="chooseCourse(item)">
         <p id='name'>{{item.name}}</p>
         <p id='price'>￥{{item.price}}</p>
         <p id='abstract'>{{item.abstract}}</p>
@@ -41,8 +41,8 @@ export default {
         this.allCourse = res.data
       })
     },
-    chooseCourse(name){
-         this.$router.push({name:'courseDetail',params:{name:name}})
+    chooseCourse(item){
+         this.$router.push({name:'cart',params:{item:item}})
     //   var  sql=classes.getCourseClass.replace('?',name)
     //        this.$http.post("/api/base/action", { sql: sql }).then(res => {
     //            var data = res.data;

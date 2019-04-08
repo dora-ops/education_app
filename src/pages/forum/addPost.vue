@@ -2,7 +2,7 @@
   <div id='addPost'>
     <div><top v-bind:title="title" :back='back'></top></div>
     <div>
-      <input class="title" type="text" v-model='post.editTitle' placeholder="请输入标题">
+      <input class="title" type="text" v-model='post.title' placeholder="请输入标题">
     </div>
     <div id='content'>
       <el-input
@@ -13,7 +13,7 @@
         v-model="post.content">
       </el-input>
     </div>
-    <div>
+    <!-- <div>
       <el-upload
         action="https://jsonplaceholder.typicode.com/posts/"
         list-type="picture-card"
@@ -24,7 +24,7 @@
       <el-dialog :visible.sync="dialogVisible">
         <img width="100%" :src="dialogImageUrl" alt="">
       </el-dialog>
-    </div>
+    </div> -->
     <div id='bottom' @click="submit">
       <p>提交</p>
     </div>
@@ -42,11 +42,9 @@ export default {
       title: '编辑',
       back: 1,
       post:{
-        editTitle: '',
+        title: '',
         content: '',
-        name:this.$store.getters.user.name,
-        dialogImageUrl: '',
-        dateTime: ''
+        uid:JSON.parse(sessionStorage.userInfo).id
       },
       dialogVisible: false
     };
@@ -67,7 +65,14 @@ export default {
       this.dialogVisible = true;
     },
     submit(){
-
+        var post=this.post;
+        const moment=  this.$moment;
+        
+        post.time=moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+        var param={table:'posts',data:post}
+        this.$http.post("/api/base/insert", param).then(res => {
+             this.$router.push({ name: "forum" });
+        });
     }
   }
 }
