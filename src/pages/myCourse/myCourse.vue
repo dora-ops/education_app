@@ -6,9 +6,12 @@
       <p @click="switchTo2">去逛逛</p>
     </div>
     <div v-else class="context">
-      <div class='myClass' v-for="(itemCourse , index) in courseList"  >
+      <div class='myClass' v-for="(itemCourse,index) in courseList" >
         <p id='name'>课程:{{itemCourse.name}}</p>
-        <div v-for="item in itemCourse[index].classList" @click="chooseThis(item.id)">
+        
+        
+        <div v-for="(item,j) in itemCourse.classList"  @click="chooseThis(item.id)">
+             <p id='name'>班级:{{item.name}}</p>
              <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
         <p id='time'>开始时间:{{item.startDate}}-结束时间：{{item.endDate}}</p>
         <p id='teacher'>开课老师：{{item.teacher}}</p>
@@ -33,9 +36,7 @@ export default {
     return {
       title: "我的课程",
       switchValue: 1,
-      courseList: [
-        
-      ],
+      courseList: [],
 
       ifBuy: ""
     };
@@ -51,7 +52,6 @@ export default {
       this.$router.push("courseDetail/" + id);
     },
     getCourse(item) {
-      const moment = this.$moment;
       //   console.log(this.$store.getters.user)
       var user = this.$store.getters.user;
       if (this.$store.getters.user.ifBuy == "0") {
@@ -63,39 +63,70 @@ export default {
           let courseList =
             user.courses != (null || undefined) ? JSON.parse(user.courses) : [];
           sql = courses.getCourseList(courseList);
-          this.$http.post("/api/base/action", { sql: sql }).then(res => {
+          this.$http.post("/api/base/action", { sql: sql }).then(async res => {
             var data = res.data;
+            var pList = [];
             for (var i = 0; i < data.length; i++) {
               var course = data[i];
-              var classList =
-                course.classes != (null || undefined)
-                  ? JSON.parse(course.classes)
-                  : [];
-              sql = classes.getClassList(classList);
+              if (course.classes) {
+                var classList = JSON.parse(course.classes);
+                sql = classes.getClassList(classList);
+                var p = this.$http.post("/api/base/action", { sql: sql });
+
+                pList.push(p);
+              } else {
+                pList.push(
+                  new Promise(function(resolve, reject) {
+                    resolve(null);
+                  })
+                );
+              }
               this.courseList[i] = course;
-              this.$http.post("/api/base/action", { sql: sql }).then((res,i) => {
+            }
+
+            var resList = await Promise.all(pList);
+            // debugger
+            var courseList= this.courseList
+            for (let i = 0; i < resList.length; i++) {
+              const res = resList[i];
+              var c=courseList[i]
+            //   debugger
+              if (res) {
                 var data = res.data;
+                
+                // this.$set(this.courseList[i], "classList", null);
+                // this.courseList[i].classList=new Array()
                 for (var j = 0; j < data.length; j++) {
                   //   debugger;
                   if (data[j].startDate) {
-                    data[j].startDate = moment(data[j].startDate).format(
+                    data[j].startDate = this.$moment(data[j].startDate).format(
                       "MM-DD-YYYY"
                     );
                   }
                   if (data[j].endDate) {
-                    data[j].endDate = moment(data[j].startDate).format(
+                    data[j].endDate = this.$moment(data[j].startDate).format(
                       "MM-DD-YYYY"
                     );
                   }
+                //   debugger
+                //   this.$set(this.courseList[i].classList, j, data[j]);
                 }
-                console.log(i)
-                console.log(this.courseList)
-                
-                this.$set(this.courseList[i],'classList',data)
-                // this.courseList[i].classList = data;
-              });
+                // this.courseList[i].classList=data
+                c.classList=data
+                  this.$set(this.courseList[i], "classList", data);
+              } else {
+                // this.courseList[i].classList=[]
+                c.classList=[]
+                 this.$set(this.courseList[i], "classList", []);
+              }
+              courseList[i]=c
             }
-            
+            // this.courseList=courseList
+            //   resList.forEach(res => {
+
+            //     i++
+            //   });
+            console.log(this.courseList);
           });
         });
       }
