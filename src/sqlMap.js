@@ -28,7 +28,19 @@ var sqlMap = {
             }
             return sql
         },
-        updateifSale: 'UPDATE `courses` SET `ifSale` = "?" WHERE (`id` = "?");'
+        updateifSale: 'UPDATE `courses` SET `ifSale` = "?" WHERE (`id` = "?");',
+        updateClasses: 'UPDATE `courses` SET `classes` = "?" WHERE (`id` = "?");',
+        getCourseList: function (params) {
+            var sql = 'select * from courses where id in ('
+            for (let index = 0; index < params.length; index++) {
+                const element = params[index];
+                sql += element + ","
+                
+            }
+            sql = sql.substring(0, sql.lastIndexOf(','))
+            sql += ')'
+            return sql;
+        },
     },
     classes: {
         getResource: function (params) {
@@ -48,6 +60,17 @@ var sqlMap = {
         },
         getCourseClass: 'select * from classes where course ="?"',
         getClassResource: 'select * from classes where id =?',
+        getClassList: function (params) {
+            var sql = 'select * from classes where id in ('
+            for (let index = 0; index < params.length; index++) {
+                const element = params[index];
+                sql += element + ","
+                
+            }
+            sql = sql.substring(0, sql.lastIndexOf(','))
+            sql += ')'
+            return sql;
+        },
        
     },
     customers: {

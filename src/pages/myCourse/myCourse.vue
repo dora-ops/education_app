@@ -6,11 +6,14 @@
       <p @click="switchTo2">去逛逛</p>
     </div>
     <div v-else class="context">
-      <div class='myClass' v-for="item in myClass" v-bind:key="item.id" @click="chooseThis(item.id)">
-        <p id='name'>{{item.name}}</p>
-        <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
+      <div class='myClass' v-for="(itemCourse , index) in courseList"  >
+        <p id='name'>课程:{{itemCourse.name}}</p>
+        <div v-for="item in itemCourse[index].classList" @click="chooseThis(item.id)">
+             <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
         <p id='time'>开始时间:{{item.startDate}}-结束时间：{{item.endDate}}</p>
         <p id='teacher'>开课老师：{{item.teacher}}</p>
+        </div>
+       
       </div>
     </div>
     <bottom v-bind:switchValue="switchValue"></bottom>
@@ -20,7 +23,7 @@
 <script>
 import top from "@/components/top";
 import bottom from "@/components/bottom";
-import { customers } from "../../sqlMap.js";
+import { customers, courses, classes } from "../../sqlMap.js";
 // import * as moment from 'moment'
 
 export default {
@@ -30,7 +33,10 @@ export default {
     return {
       title: "我的课程",
       switchValue: 1,
-      myClass: [],
+      courseList: [
+        
+      ],
+
       ifBuy: ""
     };
   },
@@ -42,7 +48,7 @@ export default {
   methods: {
     chooseThis(id) {
       //班级id
-       this.$router.push('courseDetail/'+id)
+      this.$router.push("courseDetail/" + id);
     },
     getCourse(item) {
       const moment = this.$moment;
@@ -54,22 +60,43 @@ export default {
         var sql = customers.getUserInfo.replace("?", user.id);
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
           user = res.data[0];
-          let courses =
+          let courseList =
             user.courses != (null || undefined) ? JSON.parse(user.courses) : [];
-          this.$http
-            .get("/api/classes/getMyClasses/", {
-              params: { courses: courses }
-            })
-            .then(res => {
-              var data = res.data;
-              for (let i = 0; i < data.length; i++) {
-                data[i].startDate = moment(data[i].startDate).format(
-                  "MM-DD-YYYY"
-                );
-                data[i].endDate = moment(data[i].endDate).format("MM-DD-YYYY");
-              }
-              this.myClass = data;
-            });
+          sql = courses.getCourseList(courseList);
+          this.$http.post("/api/base/action", { sql: sql }).then(res => {
+            var data = res.data;
+            for (var i = 0; i < data.length; i++) {
+              var course = data[i];
+              var classList =
+                course.classes != (null || undefined)
+                  ? JSON.parse(course.classes)
+                  : [];
+              sql = classes.getClassList(classList);
+              this.courseList[i] = course;
+              this.$http.post("/api/base/action", { sql: sql }).then((res,i) => {
+                var data = res.data;
+                for (var j = 0; j < data.length; j++) {
+                  //   debugger;
+                  if (data[j].startDate) {
+                    data[j].startDate = moment(data[j].startDate).format(
+                      "MM-DD-YYYY"
+                    );
+                  }
+                  if (data[j].endDate) {
+                    data[j].endDate = moment(data[j].startDate).format(
+                      "MM-DD-YYYY"
+                    );
+                  }
+                }
+                console.log(i)
+                console.log(this.courseList)
+                
+                this.$set(this.courseList[i],'classList',data)
+                // this.courseList[i].classList = data;
+              });
+            }
+            
+          });
         });
       }
     },
@@ -84,7 +111,6 @@ export default {
   },
   created() {
     this.getCourse();
-   
   }
 };
 </script>

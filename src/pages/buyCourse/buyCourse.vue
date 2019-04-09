@@ -42,7 +42,9 @@ export default {
       })
     },
     chooseCourse(item){
-         this.$router.push({name:'cart',params:{item:item}})
+         this.$router.push({path:'cart/'+item.id,query:{
+             item: JSON.stringify(item) 
+         }})
     //   var  sql=classes.getCourseClass.replace('?',name)
     //        this.$http.post("/api/base/action", { sql: sql }).then(res => {
     //            var data = res.data;

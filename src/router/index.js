@@ -95,7 +95,7 @@ export default new Router({
         component: courseDetail
       },
       {
-        path: '/cart/:name',
+        path: '/cart/:id',
         name: 'cart',
         component: cart
       }

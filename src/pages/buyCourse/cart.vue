@@ -43,7 +43,7 @@
 <script>
 import header from "@/components/header";
 import citem from "@/components/citem";
-import { classes, customers } from "../../sqlMap.js";
+import { classes, customers,courses } from "../../sqlMap.js";
 
 export default {
   data() {
@@ -59,24 +59,37 @@ export default {
       if (this.total) {
         var user = this.user;
         var classes = user.classes ==null||undefined?[] :JSON.parse(user.classes);
-        var courses = user.courses==null||undefined?[] :JSON.parse(user.courses);
+        var courseList = user.courses==null||undefined?[] :JSON.parse(user.courses);
+        var sql=courses.getMyCourses.replace('?',this.courseId)
+        var res= await this.$http.post("/api/base/action", { sql: sql })
+        var clsCour=res.data[0].classes
+        var clsCourList=clsCour==null||undefined?[] :JSON.parse(clsCour);
+
         for (let i = 0; i < this.shoplist.length; i++) {
           const item = this.shoplist[i];
           if (item.checked) {
             classes.push(item.id);
+            clsCourList.push(item.id)
           }
         }
-        courses.push(this.courseId)
+        courseList.push(this.courseId)
         //去重
-        classes = Array.from(new Set(classes)) ;
-        courses = Array.from(new Set(courses));
-        var sql = customers.buyClasses
-          .replace("?", JSON.stringify(courses))
+        classes = Array.from(new Set(classes));
+        courseList = Array.from(new Set(courseList));
+        clsCourList=Array.from(new Set(clsCourList));
+         sql = customers.buyClasses
+          .replace("?", JSON.stringify(courseList))
           .replace("?", JSON.stringify(classes))
           .replace("?", user.id);
+           
         alert(`一共支付${this.total}元`);
-        this.$http.post("/api/base/action", { sql: sql }).then(res => {});
-        
+        this.$http.post("/api/base/action", { sql: sql }).then(res => {
+          sql=courses.updateClasses.replace('?',JSON.stringify(clsCourList)).replace("?", this.courseId);
+         this.$http.post("/api/base/action", { sql: sql }).then(res => {
+          this.$router.push({name:'myCourse'})
+        });
+        });
+       
       } else {
         this.$toast.show(`请勾选商品`);
       }
@@ -136,9 +149,9 @@ export default {
     }
   },
   created() {
-    var item = this.$router.currentRoute.params.item;
-
-    this.getCourse(item);
+    var query =this.$router.currentRoute.query ;
+    // debugger
+    this.getCourse(JSON.parse(query.item));
   },
   components: {
     "imooc-header": header,
