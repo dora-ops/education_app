@@ -2,9 +2,9 @@
   <div>
     <div id="context">
       <div id='context1'>
-        <div id='photo'></div>
+        <div id='photo' :style="{backgroundImage:'url(' + personal.url + ')'}" ></div>
         <p>{{personal.name}}</p>
-        <img @click='edit' id='edit' src='../../../static/img/icon/edit.png'/>
+        <img @click='edit' id='edit' src="../../../static/img/icon/edit.png"/>
       </div>
     </div>
     <bottom v-bind:switchValue="switchValue"></bottom>
@@ -14,7 +14,7 @@
 <script>
 
 import bottom from '@/components/bottom'
-
+import {resource} from "../../sqlMap.js";
 export default {
   name: 'personalCenter',
   components:{bottom},
@@ -23,6 +23,7 @@ export default {
       switchValue:4,
       personal:{
         name: this.$store.getters.user.name,
+        url:'../../../static/img/icon/edit.png'
       },
       changePhoto:false,
     };
@@ -30,7 +31,15 @@ export default {
 
   computed: {},
 
-  mounted: {},
+  created(){
+     var user=JSON.parse(sessionStorage.getItem('userInfo')) 
+     console.log(user)
+     var sql=resource.getResource.replace('?',user.photo)
+      this.$http.post("/api/base/action", { sql: sql }).then(res => {
+           var r= res.data[0]
+           this.personal.url='http://localhost:3000/'+r.fileName
+        })
+  },
 
   methods: {
     edit(){
@@ -57,7 +66,7 @@ export default {
     width: 80px;
     height: 80px;
     float: left;
-    background: url('../../../static/img/icon/photo.png') no-repeat 50% 50%;
+    
     background-color: white;
     background-size: 70%;
     box-shadow: darkgrey 0px 5px 10px 1px ;
