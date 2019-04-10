@@ -7,11 +7,9 @@
     </div>
     <div v-else class="context">
       <div class='myClass' v-for="(itemCourse,index) in courseList" >
-        <p id='name'>课程:{{itemCourse.name}}</p>
-        
-        
+        <p id='courseName'>课程:{{itemCourse.name}}</p>
         <div v-for="(item,j) in itemCourse.classList"  @click="chooseThis(item.id)">
-             <p id='name'>班级:{{item.name}}</p>
+             <p id='className'>班级:{{item.name}}</p>
              <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
         <p id='time'>开始时间:{{item.startDate}}-结束时间：{{item.endDate}}</p>
         <p id='teacher'>开课老师：{{item.teacher}}</p>
@@ -164,10 +162,18 @@ export default {
   background-color: white;
   padding: 5px;
   margin-top: 10px;
+  border-top: #bfbfbf 1px solid;
+  border-bottom: #bfbfbf 1px solid;
 }
-#name {
-  font-size: 20px;
+#courseName {
+  font-size: 26px;
   margin: 0;
+  color:rgb(156, 189, 226);
+  text-align: center;
+}
+#className {
+  font-size: 20px;
+  margin: 15px 0 0 0;
 }
 img {
   width: 16px;
@@ -181,6 +187,6 @@ img {
   margin: 5px;
 }
 #teacher {
-  margin: 10px 0px 0px 0px;
+  margin: 10px 0px 10px 0px;
 }
 </style>

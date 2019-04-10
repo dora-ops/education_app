@@ -74,7 +74,7 @@ export default {
     margin-bottom: 5px;
   }
   #price{
-    color:orange;
+    color:rgb(156, 189, 226);
     font-size: 24px;
     font-weight: bold;
     float: right;

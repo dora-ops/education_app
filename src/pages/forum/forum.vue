@@ -4,9 +4,9 @@
     <img id='add' @click="addPost" src="../../../static/img/icon/add.png"/>
     <div class="context" >
       <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id">
-        <p id='name'>标题:{{item.title}}</p>
-        <p id='price'>用户:{{item.uid}}</p>
-        <p id='abstract'>内容：{{item.content}}</p>
+        <h2 id='title'>{{item.title}}</h2>
+        <p id='abstract'>{{item.content}}</p>
+        <p id='author'>作者:{{item.uid}}</p>
       </div>
     </div>
     <div><Bottom v-bind:switchValue="switchValue"></Bottom></div>
@@ -65,23 +65,22 @@ export default {
   padding: 5px;
   margin-top: 10px;
 }
-#name {
-  font-size: 22px;
-  margin-top: 10px;
-  margin-bottom: 5px;
+#title {
+  margin: 10px 0 5px 10px;
 }
-#price {
-  color: orange;
-  font-size: 24px;
+#author {
+  color: #c0bdbda9;
+  font-size: 16px;
   font-weight: bold;
-  float: right;
-  margin-top: -35px;
-  margin-right: 20px;
-  margin-bottom: 0px;
+  margin: 10px 20px 0 12px;
 }
 #abstract {
   margin: 10px 0px 0px 0px;
   color: #bfbfbf;
-  // width: 80%;
+  width: 90%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-indent:2em;
 }
 </style>

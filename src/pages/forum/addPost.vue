@@ -44,7 +44,7 @@ export default {
       post:{
         title: '',
         content: '',
-        uid:JSON.parse(sessionStorage.userInfo).id
+        uid:JSON.parse(sessionStorage.userInfo).name
       },
       dialogVisible: false
     };

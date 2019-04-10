@@ -2,7 +2,7 @@
     <div>
         <div id="context">
             <div id='context1'>
-                <div id='photo' :style="{backgroundImage:'url(' + personal.url + ')'}"></div>
+                <div id='photo' :style="{backgroundImage:'url(' + personal.url + ')'}" class='background'></div>
                 <p>{{personal.name}}</p>
                 <img @click='edit' id='edit' src="../../../static/img/icon/edit.png" />
             </div>
@@ -90,5 +90,9 @@ export default {
   float: left;
   margin-top: 28px;
   margin-left: 12px;
+}
+.background{
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
 }
 </style>
