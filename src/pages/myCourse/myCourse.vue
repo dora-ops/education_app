@@ -127,6 +127,7 @@ export default {
             //     i++
             //   });
             console.log(this.courseList);
+            this.$forceUpdate();
           });
         });
       }

@@ -17,7 +17,7 @@
 <script>
 
 import top from '@/components/top'
-
+import { customers,resource} from "../../../sqlMap.js";
 export default {
   name: 'changePhoto',
   data () {
@@ -33,64 +33,80 @@ export default {
   computed: {},
 
   mounted: {},
+  created(){
+    var user = this.$store.getters.user;
+    var sql=customers.getUserInfo.replace('?',user.id)
+    this.$http.post("/api/base/action", { sql: sql }).then(res => {
+        user=res.data[0]
+        sql=resource.getResource.replace('?', user.photo)
+        this.$http.post("/api/base/action", { sql: sql }).then(res => {
+           var r= res.data[0]
+           this.imageUrl='http://localhost:3000/'+r.fileName
+        })
+    })
+  },
 
   methods: {
     uploadUrl() {
-      var url = process.env.BASE_API + "url" // 生产环境和开发环境的判断
+      var url = 'http://localhost:3000/api/base/upload' // 生产环境和开发环境的判断
       return url
     },
     uploadError() {
-      this.$message.error('上传失败，请重新上传')
+    //   this.$message.error('上传失败，请重新上传')
       // this.showNoticeUploading = false
     },
     handleAvatarSuccess(res, file) {
+        var user = this.$store.getters.user;
+        var id=res[0];
+        var sql=customers.updateUserPhoto.replace('?',id).replace('?',user.id)
+         this.$http.post("/api/base/action", { sql: sql }).then(res => {})
         this.imageUrl = URL.createObjectURL(file.raw);
     },
-    beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isPNG = file.type === 'image/png';
-        const isLt2M = file.size / 1024 / 1024 < 2;
+    // beforeAvatarUpload(file) {
+    //     const isJPG = file.type === 'image/jpeg';
+    //     const isPNG = file.type === 'image/png';
+    //     const isLt2M = file.size / 1024 / 1024 < 2;
 
-        if (!isJPG&&!isPNG) {
-          this.$message.error('上传头像图片只能是 JPG 格式或 PNG格式!');
-        }
-        if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!');
-        }
+    //     if (!isJPG&&!isPNG) {
+    //       this.$message.error('上传头像图片只能是 JPG 格式或 PNG格式!');
+    //     }
+    //     if (!isLt2M) {
+    //       this.$message.error('上传头像图片大小不能超过 2MB!');
+    //     }
 
-        if(isJPG && isLt2M == true){
-          console.log(file);
+    //     if(isJPG && isLt2M == true){
+    //       console.log(file);
 
-          //将文件转化为formdata数据上传
-          let fd = new FormData()
-          fd.append('file', file)
-          console.log(fd)
+    //       //将文件转化为formdata数据上传
+    //       let fd = new FormData()
+    //       fd.append('file', file)
+    //       console.log(fd)
        
-        // post上传图片
+    //     // post上传图片
 
-           let that = this
+    //        let that = this
          
-            new Promise(function (resolve, reject) {
-                that.axios.post('/file/imgUpload', fd, 
-                      {
-                      headers: {
-                      'Content-Type': 'multipart/form-data'
-                      }
-                    }).then((response) => {
-                       that.imgId = response.data.data
-                        resolve(that.imgId);
-                    }).catch((error) =>{
-                        this.$message.error('头像上传失败，请重新上传!');
-                    })
-                   }).then(function (id){
-                   that.axios.get('/file/view/'+id)
-                    .then((response) => {
-                         that.imageUrl = response.request.responseURL;
-                     })
-              })         
-        }
-        return isJPG && isLt2M;
-    }
+    //         new Promise(function (resolve, reject) {
+    //             that.axios.post('/file/imgUpload', fd, 
+    //                   {
+    //                   headers: {
+    //                   'Content-Type': 'multipart/form-data'
+    //                   }
+    //                 }).then((response) => {
+    //                    that.imgId = response.data.data
+    //                     resolve(that.imgId);
+    //                 }).catch((error) =>{
+    //                     this.$message.error('头像上传失败，请重新上传!');
+    //                 })
+    //                }).then(function (id){
+    //                that.axios.get('/file/view/'+id)
+    //                 .then((response) => {
+    //                      that.imageUrl = response.request.responseURL;
+    //                  })
+    //           })         
+    //     }
+    //     return isJPG && isLt2M;
+    // }
   }
 }
 

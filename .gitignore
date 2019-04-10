@@ -14,3 +14,5 @@ yarn-error.log*
 *.sln
 *.mp4
 *.avi
+*.jpg
+*.png
