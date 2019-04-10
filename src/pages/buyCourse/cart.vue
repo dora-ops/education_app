@@ -58,12 +58,12 @@ export default {
     async pay() {
       if (this.total) {
         var user = this.user;
-        var classes = user.classes ==null||undefined?[] :JSON.parse(user.classes);
-        var courseList = user.courses==null||undefined?[] :JSON.parse(user.courses);
+        var classes = user.classes ==null||user.classes==''?[] :JSON.parse(user.classes);
+        var courseList = user.courses==null||user.courses==''?[] :JSON.parse(user.courses);
         var sql=courses.getMyCourses.replace('?',this.courseId)
         var res= await this.$http.post("/api/base/action", { sql: sql })
         var clsCour=res.data[0].classes
-        var clsCourList=clsCour==null||undefined?[] :JSON.parse(clsCour);
+        var clsCourList=clsCour==null||clsCour==''?[] :JSON.parse(clsCour);
 
         for (let i = 0; i < this.shoplist.length; i++) {
           const item = this.shoplist[i];
@@ -150,7 +150,11 @@ export default {
   },
   created() {
     var query =this.$router.currentRoute.query ;
-    // debugger
+    var user = this.$store.getters.user;
+    var sql=customers.getUserInfo.replace('?',user.id)
+     this.$http.post("/api/base/action", { sql: sql }).then(res => {
+         this.user = res.data[0];
+     })
     this.getCourse(JSON.parse(query.item));
   },
   components: {
