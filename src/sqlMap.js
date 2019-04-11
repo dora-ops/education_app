@@ -71,6 +71,19 @@ var sqlMap = {
             sql += ')'
             return sql;
         },
+        updatePeople: function (params) {
+            var sql = 'update classes set peopleQTY=peopleQTY+1 where id in ('
+           
+            for (let index = 0; index < params.length; index++) {
+                const element = params[index];
+                sql += element + ","
+                
+            }
+          
+            sql = sql.substring(0, sql.lastIndexOf(','))
+            sql += ')'
+            return sql;
+        },
        
     },
     customers: {

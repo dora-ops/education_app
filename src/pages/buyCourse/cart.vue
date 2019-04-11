@@ -1,49 +1,51 @@
 <template>
-  <transition name="slideright">
-    <div class="cart">
-      <!-- 头部 -->
-      <imooc-header title="购物车"></imooc-header>
+    <transition name="slideright">
+        <div class="cart">
+            <!-- 头部 -->
+            <imooc-header title="购物车"></imooc-header>
 
-      <!-- 主要内容 -->
-      <div class="imooc-container">
-        <!-- 列表 -->
-        <ul class="shop-list">
-          <li class="shop-item imooc-flex border-bottom" v-for="(shop, index) in shoplist" :key="index">
-            <div class="checkbox-wrapper imooc-flex imooc-flex-center mr-10" @click="checkItem(index)">
-              <div class="checkbox" :class="{'checked': shop.checked}"></div>
+            <!-- 主要内容 -->
+            <div class="imooc-container">
+                <!-- 列表 -->
+                <ul class="shop-list">
+                    <li class="shop-item imooc-flex border-bottom" v-for="(shop, index) in shoplist" :key="index">
+                        <div class="checkbox-wrapper imooc-flex imooc-flex-center mr-10" @click="checkItem(index)">
+                            <div class="checkbox" :class="{'checked': shop.checked}"></div>
+                        </div>
+                        <div class="shop-container" @click="checkItem(index)">
+                            <imooc-citem :course="shop" width="10rem" height="7rem"></imooc-citem>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- 暂无商品 -->
+                <div class="no-shop" v-if="shoplist.length == 0">
+                    <img src="@/public/images/no-shop.png">
+                    <p>暂无商品</p>
+                </div>
             </div>
-            <div class="shop-container" @click="checkItem(index)">
-              <imooc-citem :course="shop" width="10rem" height="7rem"></imooc-citem>
+
+            <!-- 底部 -->
+            <div class="footer imooc-flex">
+                <div class="checkbox-wrapper imooc-flex imooc-flex-center mr-10" @click="checkAll">
+                    <div class="checkbox" :class="{'checked': all}"></div>
+                    <span class="ml-10">全选</span>
+                </div>
+                <div class="money imooc-flex imooc-flex-center">
+                    <span>合计:
+                        <span class="cr-main">{{ total }}</span>
+                    </span>
+                </div>
+                <div class="btn buy-btn" @click="pay" :class="{'disabled': total == 0}">购买</div>
             </div>
-          </li>
-        </ul>
-
-        <!-- 暂无商品 -->
-        <div class="no-shop" v-if="shoplist.length == 0">
-          <img src="@/public/images/no-shop.png">
-          <p>暂无商品</p>
         </div>
-      </div>
-
-      <!-- 底部 -->
-      <div class="footer imooc-flex">
-        <div class="checkbox-wrapper imooc-flex imooc-flex-center mr-10" @click="checkAll">
-          <div class="checkbox" :class="{'checked': all}"></div>
-          <span class="ml-10">全选</span>
-        </div>
-        <div class="money imooc-flex imooc-flex-center">
-          <span>合计: <span class="cr-main">{{ total }}</span></span>
-        </div>
-        <div class="btn buy-btn" @click="pay" :class="{'disabled': total == 0}">购买</div>
-      </div>
-    </div>
-  </transition>
+    </transition>
 </template>
 
 <script>
 import header from "@/components/header";
 import citem from "@/components/citem";
-import { classes, customers,courses } from "../../sqlMap.js";
+import { classes, customers, courses } from "../../sqlMap.js";
 
 export default {
   data() {
@@ -58,42 +60,59 @@ export default {
     async pay() {
       if (this.total) {
         var user = this.user;
-        var classes = user.classes ==null||user.classes==''?[] :JSON.parse(user.classes);
-        var courseList = user.courses==null||user.courses==''?[] :JSON.parse(user.courses);
-        var sql=courses.getMyCourses.replace('?',this.courseId)
-        var res= await this.$http.post("/api/base/action", { sql: sql })
+        var classesList =
+          user.classes == null || user.classes == ""
+            ? []
+            : JSON.parse(user.classes);
+        var courseList =
+          user.courses == null || user.courses == ""
+            ? []
+            : JSON.parse(user.courses);
+        var sql = courses.getMyCourses.replace("?", this.courseId);
+        var res = await this.$http.post("/api/base/action", { sql: sql });
         // this.$store.commit("saveUserInfo",res.data[0])
-        var clsCour=res.data[0].classes
-        var clsCourList=clsCour==null||clsCour==''?[] :JSON.parse(clsCour);
+        var clsCour = res.data[0].classes;
+        var clsCourList =
+          clsCour == null || clsCour == "" ? [] : JSON.parse(clsCour);
 
+        var buyClassList = [];
         for (let i = 0; i < this.shoplist.length; i++) {
           const item = this.shoplist[i];
           if (item.checked) {
-            classes.push(item.id);
-            clsCourList.push(item.id)
+            classesList.push(item.id);
+            clsCourList.push(item.id);
+            buyClassList.push(item.id);
           }
         }
-        courseList.push(this.courseId)
+        courseList.push(this.courseId);
         //去重
-        classes = Array.from(new Set(classes));
+        classesList = Array.from(new Set(classesList));
         courseList = Array.from(new Set(courseList));
-        clsCourList=Array.from(new Set(clsCourList));
-         sql = customers.buyClasses
-          .replace("?", JSON.stringify(classes))
+        clsCourList = Array.from(new Set(clsCourList));
+        sql = customers.buyClasses
+          .replace("?", JSON.stringify(courseList))
+          .replace("?", JSON.stringify(classesList))
           .replace("?", user.id);
-           
+
         alert(`一共支付${this.total}元`);
+
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
-          sql=courses.updateClasses.replace('?',JSON.stringify(clsCourList)).replace("?", this.courseId);
+          sql = courses.updateClasses
+            .replace("?", JSON.stringify(clsCourList))
+            .replace("?", this.courseId);
           this.$http.post("/api/base/action", { sql: sql }).then(res => {
-            sql=customers.updateUserBuy.replace('?',user.id)
+            sql = customers.updateUserBuy.replace("?", user.id);
+
             this.$http.post("/api/base/action", { sql: sql }).then(res => {
-                this.$router.push({name:'myCourse'})
-            })  
-            
+              if (buyClassList.length != 0) {
+                sql = classes.updatePeople(buyClassList);
+                this.$http.post("/api/base/action", { sql: sql }).then(res => {
+                  this.$router.push({ name: "myCourse" });
+                });
+              }
+            });
           });
         });
-       
       } else {
         this.$toast.show(`请勾选商品`);
       }
@@ -112,6 +131,17 @@ export default {
       });
       this.all = checked;
     },
+    delshop(index) {
+      if (confirm("需要删除该商品吗?")) {
+        // 购物车的数据
+        let shopCartInfo = JSON.parse(this.$storage.get("shopCartInfo"));
+
+        // 删除
+        shopCartInfo.splice(index, 1);
+        this.$storage.set("shopCartInfo", shopCartInfo);
+        this.$store.commit("set_shopCartInfo", shopCartInfo);
+      }
+    },
     getCourse(item) {
       var sql = classes.getCourseClass.replace("?", item.name);
       this.courseId = item.id;
@@ -122,13 +152,16 @@ export default {
           cla.price = item.price;
         });
         this.shoplist = data;
-        for(let i=0;i<this.shoplist.length;i++){
-          this.shoplist[i].startDate = this.$moment(this.shoplist[i].startDate).format("YYYY.MM.DD");
-          this.shoplist[i].endDate = this.$moment(this.shoplist[i].endDate).format("YYYY.MM.DD");
+        for (let i = 0; i < this.shoplist.length; i++) {
+          this.shoplist[i].startDate = this.$moment(
+            this.shoplist[i].startDate
+          ).format("YYYY.MM.DD");
+          this.shoplist[i].endDate = this.$moment(
+            this.shoplist[i].endDate
+          ).format("YYYY.MM.DD");
         }
       });
-    },
-    
+    }
   },
   computed: {
     // shoplist() {
@@ -146,12 +179,12 @@ export default {
     }
   },
   created() {
-    var query =this.$router.currentRoute.query ;
+    var query = this.$router.currentRoute.query;
     var user = this.$store.getters.user;
-    var sql=customers.getUserInfo.replace('?',user.id)
-     this.$http.post("/api/base/action", { sql: sql }).then(res => {
-         this.user = res.data[0];
-     })
+    var sql = customers.getUserInfo.replace("?", user.id);
+    this.$http.post("/api/base/action", { sql: sql }).then(res => {
+      this.user = res.data[0];
+    });
     this.getCourse(JSON.parse(query.item));
   },
   components: {
@@ -175,15 +208,15 @@ export default {
   background-color: #fff;
 }
 .imooc-container {
-  padding:4rem 1.5rem;
+  padding: 4rem 1.5rem;
   min-height: 100vh;
-  .border-bottom{
-    border-bottom: 1px #bfbfbf solid
+  .border-bottom {
+    border-bottom: 1px #bfbfbf solid;
   }
 }
 .checkbox-wrapper {
   .checkbox {
-    margin-top: 0; 
+    margin-top: 0;
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
