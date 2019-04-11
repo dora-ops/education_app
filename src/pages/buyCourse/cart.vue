@@ -79,7 +79,6 @@ export default {
         courseList = Array.from(new Set(courseList));
         clsCourList=Array.from(new Set(clsCourList));
          sql = customers.buyClasses
-          .replace("?", JSON.stringify(courseList))
           .replace("?", JSON.stringify(classes))
           .replace("?", user.id);
            
@@ -112,17 +111,6 @@ export default {
         this.$set(item, "checked", checked);
       });
       this.all = checked;
-    },
-    delshop(index) {
-      if (confirm("需要删除该商品吗?")) {
-        // 购物车的数据
-        let shopCartInfo = JSON.parse(this.$storage.get("shopCartInfo"));
-
-        // 删除
-        shopCartInfo.splice(index, 1);
-        this.$storage.set("shopCartInfo", shopCartInfo);
-        this.$store.commit("set_shopCartInfo", shopCartInfo);
-      }
     },
     getCourse(item) {
       var sql = classes.getCourseClass.replace("?", item.name);

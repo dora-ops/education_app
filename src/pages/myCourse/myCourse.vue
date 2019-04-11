@@ -6,15 +6,11 @@
       <p @click="switchTo2">去逛逛</p>
     </div>
     <div v-else class="context">
-      <div class='myClass' v-for="(itemCourse,index) in courseList" >
-        <p id='courseName'>课程:{{itemCourse.name}}</p>
-        <div v-for="(item,j) in itemCourse.classList"  @click="chooseThis(item.id)">
-             <p id='className'>班级:{{item.name}}</p>
-             <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
+      <div class="myClass" v-for="item in classList"  @click="chooseThis(item.id)">
+        <p id='className'>班级:{{item.name}}</p>
+        <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
         <p id='time'>时间：{{item.startDate}} - {{item.endDate}}</p>
         <p id='teacher'>开课老师：{{item.teacher}}</p>
-        </div>
-       
       </div>
     </div>
     <bottom v-bind:switchValue="switchValue"></bottom>
@@ -34,7 +30,7 @@ export default {
     return {
       title: "我的课程",
       switchValue: 1,
-      courseList: [],
+      classList: [],
       ifBuy: ""
     };
   },
@@ -51,83 +47,106 @@ export default {
     getCourse(item) {
       //   console.log(this.$store.getters.user)
       var user = this.$store.getters.user;
-      if (this.$store.getters.user.ifBuy == "0") {
-        this.ifBuy = "0";
-      } else if (this.$store.getters.user.ifBuy == "1") {
-        var sql = customers.getUserInfo.replace("?", user.id);
-        this.$http.post("/api/base/action", { sql: sql }).then(res => {
-          user = res.data[0];
-          let courseList =
-            user.courses != (null || undefined) ? JSON.parse(user.courses) : [];
-          sql = courses.getCourseList(courseList);
-          this.$http.post("/api/base/action", { sql: sql }).then(async res => {
-            var data = res.data;
-            var pList = [];
-            for (var i = 0; i < data.length; i++) {
-              var course = data[i];
-              if (course.classes) {
-                var classList = JSON.parse(course.classes);
-                sql = classes.getClassList(classList);
-                var p = this.$http.post("/api/base/action", { sql: sql });
+      var sql = customers.getUserInfo.replace("?", user.id);
+      this.$http.post("/api/base/action", { sql: sql }).then(res => {
+        this.$store.commit("saveUserInfo",res.data[0])
+        user = this.$store.getters.user;
+        if (this.$store.getters.user.ifBuy == "0") {
+          this.ifBuy = "0";
+        } else if (this.$store.getters.user.ifBuy == "1") {
+          var classIds = JSON.parse(user.classes)
+          console.log(classIds,'班级编号')
+          var classList = []
+          for(let i=0;i<classIds.length;i++){
+            sql = customers.getMyClasses.replace("?",classIds[i])
+            this.$http.post("/api/base/action", { sql: sql }).then(res => {
+              res.data[0].startDate = this.$moment(res.data[0].startDate).format("YYYY.MM.DD");
+              res.data[0].endDate = this.$moment(res.data[0].endDate).format("YYYY.MM.DD")
+              classList.push(res.data[0])
+            });
+          }
+          this.classList = classList
+          
 
-                pList.push(p);
-              } else {
-                pList.push(
-                  new Promise(function(resolve, reject) {
-                    resolve(null);
-                  })
-                );
-              }
-              this.courseList[i] = course;
-            }
 
-            var resList = await Promise.all(pList);
-            // debugger
-            var courseList= this.courseList
-            for (let i = 0; i < resList.length; i++) {
-              const res = resList[i];
-              var c=courseList[i]
-            //   debugger
-              if (res) {
-                var data = res.data;
-                
-                // this.$set(this.courseList[i], "classList", null);
-                // this.courseList[i].classList=new Array()
-                for (var j = 0; j < data.length; j++) {
-                  //   debugger;
-                  if (data[j].startDate) {
-                    data[j].startDate = this.$moment(data[j].startDate).format(
-                      "YYYY.MM.DD"
-                    );
-                  }
-                  if (data[j].endDate) {
-                    data[j].endDate = this.$moment(data[j].endDate).format(
-                      "YYYY.MM.DD"
-                    );
-                  }
-                //   debugger
-                //   this.$set(this.courseList[i].classList, j, data[j]);
-                }
-                // this.courseList[i].classList=data
-                c.classList=data
-                  this.$set(this.courseList[i], "classList", data);
-              } else {
-                // this.courseList[i].classList=[]
-                c.classList=[]
-                 this.$set(this.courseList[i], "classList", []);
-              }
-              courseList[i]=c
-            }
-            // this.courseList=courseList
-            //   resList.forEach(res => {
 
-            //     i++
-            //   });
-            console.log(this.courseList,'我的');
-            this.$forceUpdate();
-          });
-        });
-      }
+
+          // this.$http.post("/api/base/action", { sql: sql }).then(res => {
+          //   user = res.data[0];
+          //   let courseList =
+          //     user.courses != (null || undefined) ? JSON.parse(user.courses) : [];
+          //   sql = courses.getCourseList(courseList);
+          //   this.$http.post("/api/base/action", { sql: sql }).then(async res => {
+          //     var data = res.data;
+          //     var pList = [];
+          //     for (var i = 0; i < data.length; i++) {
+          //       var course = data[i];
+          //       if (course.classes) {
+          //         var classList = JSON.parse(course.classes);
+          //         sql = classes.getClassList(classList);
+          //         var p = this.$http.post("/api/base/action", { sql: sql });
+
+          //         pList.push(p);
+          //       } else {
+          //         pList.push(
+          //           new Promise(function(resolve, reject) {
+          //             resolve(null);
+          //           })
+          //         );
+          //       }
+          //       this.courseList[i] = course;
+          //     }
+
+          //     var resList = await Promise.all(pList);
+          //     // debugger
+          //     var courseList= this.courseList
+          //     for (let i = 0; i < resList.length; i++) {
+          //       const res = resList[i];
+          //       var c=courseList[i]
+          //     //   debugger
+          //       if (res) {
+          //         var data = res.data;
+                  
+          //         // this.$set(this.courseList[i], "classList", null);
+          //         // this.courseList[i].classList=new Array()
+          //         for (var j = 0; j < data.length; j++) {
+          //           //   debugger;
+          //           if (data[j].startDate) {
+          //             data[j].startDate = this.$moment(data[j].startDate).format(
+          //               "YYYY.MM.DD"
+          //             );
+          //           }
+          //           if (data[j].endDate) {
+          //             data[j].endDate = this.$moment(data[j].endDate).format(
+          //               "YYYY.MM.DD"
+          //             );
+          //           }
+          //         //   debugger
+          //         //   this.$set(this.courseList[i].classList, j, data[j]);
+          //         }
+          //         // this.courseList[i].classList=data
+          //         c.classList=data
+          //           this.$set(this.courseList[i], "classList", data);
+          //       } else {
+          //         // this.courseList[i].classList=[]
+          //         c.classList=[]
+          //         this.$set(this.courseList[i], "classList", []);
+          //       }
+          //       courseList[i]=c
+          //     }
+          //     // this.courseList=courseList
+          //     //   resList.forEach(res => {
+
+          //     //     i++
+          //     //   });
+          //     this.$forceUpdate();
+          //   });
+          // });
+        }
+
+      });
+      
+      
     },
     dateFormat(date) {
       arr = date.split("-");
@@ -159,8 +178,8 @@ export default {
 }
 .myClass {
   background-color: white;
-  padding: 5px;
   margin-top: 10px;
+  padding: 2% 5%;
   border-top: #bfbfbf 1px solid;
   border-bottom: #bfbfbf 1px solid;
 }
