@@ -62,7 +62,7 @@ export default {
         var courseList = user.courses==null||user.courses==''?[] :JSON.parse(user.courses);
         var sql=courses.getMyCourses.replace('?',this.courseId)
         var res= await this.$http.post("/api/base/action", { sql: sql })
-        this.$store.commit("saveUserInfo",res.data[0])
+        // this.$store.commit("saveUserInfo",res.data[0])
         var clsCour=res.data[0].classes
         var clsCourList=clsCour==null||clsCour==''?[] :JSON.parse(clsCour);
 
