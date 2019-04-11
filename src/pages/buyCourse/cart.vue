@@ -19,10 +19,10 @@
         </ul>
 
         <!-- 暂无商品 -->
-        <!-- <div class="no-shop" v-if="shoplist.length == 0">
+        <div class="no-shop" v-if="shoplist.length == 0">
           <img src="@/public/images/no-shop.png">
           <p>暂无商品</p>
-        </div> -->
+        </div>
       </div>
 
       <!-- 底部 -->
@@ -87,7 +87,11 @@ export default {
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
           sql=courses.updateClasses.replace('?',JSON.stringify(clsCourList)).replace("?", this.courseId);
           this.$http.post("/api/base/action", { sql: sql }).then(res => {
-            this.$router.push({name:'myCourse'})
+            sql=customers.updateUserBuy.replace('?',user.id)
+            this.$http.post("/api/base/action", { sql: sql }).then(res => {
+                this.$router.push({name:'myCourse'})
+            })  
+            
           });
         });
        
