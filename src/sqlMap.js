@@ -109,6 +109,7 @@ var sqlMap = {
         buyClasses: 'UPDATE `customers` SET `courses` = "?" , `classes` = "?" , `ifBuy` = "1" WHERE (`id` = "?");',
         getUserInfo: 'select * from customers where id = ?',
         updateUserPhoto: 'UPDATE `customers` SET `photo` = "?"  WHERE (`id` = "?");',
+        updateUserBuy: 'UPDATE `customers` SET `ifBuy` = "1"  WHERE (`id` = "?");',
     },
     resource:{
         getResource:'select * from resource where id = ?',
