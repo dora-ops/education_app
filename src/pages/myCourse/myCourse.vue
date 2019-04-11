@@ -11,7 +11,7 @@
         <div v-for="(item,j) in itemCourse.classList"  @click="chooseThis(item.id)">
              <p id='className'>班级:{{item.name}}</p>
              <img src="../../../static/img/icon/time.png" style="float:left;width:16px;height:16px">
-        <p id='time'>开始时间:{{item.startDate}}-结束时间：{{item.endDate}}</p>
+        <p id='time'>时间：{{item.startDate}} - {{item.endDate}}</p>
         <p id='teacher'>开课老师：{{item.teacher}}</p>
         </div>
        
@@ -35,7 +35,6 @@ export default {
       title: "我的课程",
       switchValue: 1,
       courseList: [],
-
       ifBuy: ""
     };
   },
@@ -98,12 +97,12 @@ export default {
                   //   debugger;
                   if (data[j].startDate) {
                     data[j].startDate = this.$moment(data[j].startDate).format(
-                      "MM-DD-YYYY"
+                      "YYYY.MM.DD"
                     );
                   }
                   if (data[j].endDate) {
-                    data[j].endDate = this.$moment(data[j].startDate).format(
-                      "MM-DD-YYYY"
+                    data[j].endDate = this.$moment(data[j].endDate).format(
+                      "YYYY.MM.DD"
                     );
                   }
                 //   debugger
@@ -124,7 +123,7 @@ export default {
 
             //     i++
             //   });
-            console.log(this.courseList);
+            console.log(this.courseList,'我的');
             this.$forceUpdate();
           });
         });

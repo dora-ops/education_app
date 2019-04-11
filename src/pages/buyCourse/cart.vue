@@ -8,11 +8,11 @@
       <div class="imooc-container">
         <!-- 列表 -->
         <ul class="shop-list">
-          <li class="shop-item imooc-flex" v-for="(shop, index) in shoplist" :key="index">
+          <li class="shop-item imooc-flex border-bottom" v-for="(shop, index) in shoplist" :key="index">
             <div class="checkbox-wrapper imooc-flex imooc-flex-center mr-10" @click="checkItem(index)">
               <div class="checkbox" :class="{'checked': shop.checked}"></div>
             </div>
-            <div class="shop-container" @click="delshop(index)">
+            <div class="shop-container" @click="checkItem(index)">
               <imooc-citem :course="shop" width="10rem" height="7rem"></imooc-citem>
             </div>
           </li>
@@ -34,7 +34,7 @@
         <div class="money imooc-flex imooc-flex-center">
           <span>合计: <span class="cr-main">{{ total }}</span></span>
         </div>
-        <div class="btn buy-btn" @click="pay" :class="{'disabled': total == 0}">去结算</div>
+        <div class="btn buy-btn" @click="pay" :class="{'disabled': total == 0}">购买</div>
       </div>
     </div>
   </transition>
@@ -62,6 +62,7 @@ export default {
         var courseList = user.courses==null||user.courses==''?[] :JSON.parse(user.courses);
         var sql=courses.getMyCourses.replace('?',this.courseId)
         var res= await this.$http.post("/api/base/action", { sql: sql })
+        this.$store.commit("saveUserInfo",res.data[0])
         var clsCour=res.data[0].classes
         var clsCourList=clsCour==null||clsCour==''?[] :JSON.parse(clsCour);
 
@@ -85,9 +86,9 @@ export default {
         alert(`一共支付${this.total}元`);
         this.$http.post("/api/base/action", { sql: sql }).then(res => {
           sql=courses.updateClasses.replace('?',JSON.stringify(clsCourList)).replace("?", this.courseId);
-         this.$http.post("/api/base/action", { sql: sql }).then(res => {
-          this.$router.push({name:'myCourse'})
-        });
+          this.$http.post("/api/base/action", { sql: sql }).then(res => {
+            this.$router.push({name:'myCourse'})
+          });
         });
        
       } else {
@@ -129,6 +130,10 @@ export default {
           cla.price = item.price;
         });
         this.shoplist = data;
+        for(let i=0;i<this.shoplist.length;i++){
+          this.shoplist[i].startDate = this.$moment(this.shoplist[i].startDate).format("YYYY.MM.DD");
+          this.shoplist[i].endDate = this.$moment(this.shoplist[i].endDate).format("YYYY.MM.DD");
+        }
       });
     },
     
@@ -178,13 +183,17 @@ export default {
   background-color: #fff;
 }
 .imooc-container {
-  padding: 5rem 1.5rem;
+  padding:4rem 1.5rem;
   min-height: 100vh;
+  .border-bottom{
+    border-bottom: 1px #bfbfbf solid
+  }
 }
 .checkbox-wrapper {
   .checkbox {
-    width: 2rem;
-    height: 2rem;
+    margin-top: 0; 
+    width: 1.5rem;
+    height: 1.5rem;
     border-radius: 50%;
     border: 0.1rem solid #ebebeb;
     transition: all 0.1s ease-in;
@@ -195,7 +204,7 @@ export default {
   }
 }
 .shop-item {
-  margin-bottom: 1rem;
+  margin-top: 1rem;
   .icon {
     width: 8rem;
   }

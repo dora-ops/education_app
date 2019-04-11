@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div><top v-bind:title="title"></top></div>
+    <div><top v-bind:title="title" :back='back'></top></div>
     <div class="context" >
-        <p id='name'>班级:{{cls.name}}-课程:{{cls.course}}</p>
+        <!-- <p id='name'>{{cls.name}}——{{cls.course}}</p> -->
       <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id">
         <p id='name'>{{item.originalname}}</p>
         <!-- <p id='price'>老师{{item.teacher}}</p> -->
@@ -24,6 +24,7 @@ export default {
   data () {
     return {
       title:'',
+      back: 1,
       switchValue:2,
       allCourse: [],
       cls:{}
@@ -39,12 +40,14 @@ export default {
       this.$http.post("/api/base/action", { sql: sql }).then(res => {
         var cls = res.data[0];
         this.cls=cls;
-        
+        this.title = this.cls.name
+
         if (cls.resource!=undefined&&cls.resource!=null) {
             var resource=JSON.parse(cls.resource); 
             sql=classes.getResource(resource)
              this.$http.post("/api/base/action", { sql: sql }).then(res => {
                  this.allCourse = res.data;
+                 
              })
         }
         

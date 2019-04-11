@@ -37,7 +37,6 @@ export default {
     getCourse(){
       this.$http.get('/api/courses/getAllCourse',{
       }).then((res) => {
-        console.log(res.data)
         this.allCourse = res.data
       })
     },

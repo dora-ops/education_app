@@ -147,6 +147,34 @@ router.post('/action', (req, res) => {
     })
 });
 
+//教师资源
+router.post('/getTeacher', (req, res) => {
+    var p = req.body;
+    conn.query(p.sql, [], function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+        if (result) {
+            console.log(result)
+            jsonWrite(res, result);
+        }
+    })
+});
+
+//得到已购买的班级
+router.post('/getBuyClass', (req, res) => {
+    var p = req.body;
+    conn.query(p.sql, [], function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+        if (result) {
+            console.log(result)
+            jsonWrite(res, result);
+        }
+    })
+});
+
 router.post('/upload',upload.array('file',10),async (req, res, next) => {
   
     var sql='insert into resource(filePath,fileName,originalname) values(?,?,?)'

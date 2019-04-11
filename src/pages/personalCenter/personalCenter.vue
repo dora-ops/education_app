@@ -2,9 +2,17 @@
     <div>
         <div id="context">
             <div id='context1'>
-                <div id='photo' :style="{backgroundImage:'url(' + personal.url + ')'}" class='background'></div>
+                <div @click="changeImg" id='photo' :style="{backgroundImage:'url(' + personal.url + ')'}" class='background'></div>
                 <p>{{personal.name}}</p>
-                <img @click='edit' id='edit' src="../../../static/img/icon/edit.png" />
+                <!-- <img @click='edit' id='edit' src="../../../static/img/icon/edit.png" /> -->
+            </div>
+            <div id='up'>
+              <p class='border' @click="change('changeName')">修改名字</p>
+              <p class='border' @click="change('changePasssword')">修改密码</p>
+              <p @click="change('changeTel')">修改手机</p>          
+            </div>
+            <div id='bottom' @click="exit">
+                <p>退出登录</p>
             </div>
         </div>
         <bottom v-bind:switchValue="switchValue"></bottom>
@@ -45,8 +53,18 @@ export default {
   },
 
   methods: {
-    edit() {
-      this.$router.push({ name: "chooseEdit" });
+    // edit() {
+    //   this.$router.push({ name: "chooseEdit" });
+    // },
+    changeImg(){
+      this.$router.push({ name: "changePhoto" });
+    },
+    change(name){
+      this.$router.push({name: name})
+    },
+    exit(){
+      this.$router.push({name: 'login'})
+      sessionStorage.setItem('userInfo',{})
     }
   }
 };
@@ -95,4 +113,23 @@ export default {
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }
+#up{
+      margin-top: 10%;
+      background: white;
+      padding-left: 5%
+  }
+  #bottom{
+      margin-top: 5%;
+      background: white;
+      text-align: center;
+  }
+  .border{
+      
+      border-bottom: 1px rgb(231, 228, 228) solid
+  }
+  p{
+      font-size: 18px;
+      line-height: 40px;
+      margin: 0;
+  }
 </style>

@@ -9,7 +9,8 @@ const state = {
   sex: userInfo.sex,
   courses: userInfo.courses,
   ifBuy: userInfo.ifBuy,
-  id: userInfo.id
+  id: userInfo.id,
+  classes: userInfo.id
 }
 
 const mutations = {
@@ -20,6 +21,7 @@ const mutations = {
     state.sex = status.sex
     state.password = status.password
     state.courses = status.courses
+    state.classes = status.classes
     state.ifBuy = status.ifBuy
   },
   updateUserName(state,status){

@@ -64,28 +64,28 @@ export default new Router({
       name: 'personalCenter',
       component: personalCenter
     },
+    // {
+    //   path: '/personalCenter/chooseEdit',
+    //   name: 'chooseEdit',
+    //   component: chooseEdit
+    // },
     {
-      path: '/personalCenter/chooseEdit',
-      name: 'chooseEdit',
-      component: chooseEdit
-    },
-    {
-      path: '/personalCenter/chooseEdit/changeName',
+      path: '/personalCenter/changeName',
       name: 'changeName',
       component: changeName
     },
     {
-      path: '/personalCenter/chooseEdit/changePhoto',
+      path: '/personalCenter/changePhoto',
       name: 'changePhoto',
       component: changePhoto
     },
     {
-      path: '/personalCenter/chooseEdit/changePasssword',
+      path: '/personalCenter/changePasssword',
       name: 'changePasssword',
       component: changePasssword
     },
     {
-      path: '/personalCenter/chooseEdit/changeTel',
+      path: '/personalCenter/changeTel',
       name: 'changeTel',
       component: changeTel
     },

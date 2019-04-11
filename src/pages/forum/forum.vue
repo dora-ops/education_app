@@ -3,7 +3,7 @@
     <div><top v-bind:title="title"></top></div>
     <img id='add' @click="addPost" src="../../../static/img/icon/add.png"/>
     <div class="context" >
-      <div class='allCourse' v-for="item in allCourse" v-bind:key="item.id">
+      <div class='allPost' v-for="item in allPost" v-bind:key="item.id">
         <h2 id='title'>{{item.title}}</h2>
         <p id='abstract'>{{item.content}}</p>
         <p id='author'>作者:{{item.uid}}</p>
@@ -21,9 +21,9 @@ export default {
   name: "forum",
   data() {
     return {
-      title: "论坛",
+      title: "留言板",
       switchValue: 3,
-      allCourse: []
+      allPost: []
     };
   },
 
@@ -32,18 +32,18 @@ export default {
   computed: {},
 
   created() {
-    this.getCourse();
+    this.getPost();
   },
 
   methods: {
     addPost() {
       this.$router.push({ name: "addPost" });
     },
-    getCourse() {
+    getPost() {
         var sql='select * from posts'
       this.$http.post("/api/base/action", {sql:sql}).then(res => {
      
-        this.allCourse = res.data;
+        this.allPost = res.data.reverse();
       });
     }
   }
@@ -51,7 +51,7 @@ export default {
 </script>
 <style lang='scss' scoped>
 #add {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
   width: 28px;
   left: 83%;
@@ -59,8 +59,10 @@ export default {
 }
 .context {
   margin-top: 65px;
+  margin-bottom: 20%;
+  background:rgb(247,247,247);
 }
-.allCourse {
+.allPost {
   background-color: white;
   padding: 5px;
   margin-top: 10px;
