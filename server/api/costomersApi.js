@@ -49,7 +49,15 @@ var jsonWrite = function(res, ret) {
     router.get('/login', (req, res) => {
         var selectSql = $sql.costomers.selectTel;
         var params = req.query;
-        conn.query(selectSql, [params.tel], function(err, result) {
+        var p
+        if (params.tel) {
+            p=params.tel
+        }else{
+            p=params.name
+            selectSql=$sql.costomers.selectName;
+        }
+      
+        conn.query(selectSql, [p], function(err, result) {
             if (err) {
                 console.log(err);
             }
